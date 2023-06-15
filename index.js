@@ -7,7 +7,7 @@ const port=8000;
 app.use('/', require('./routes'));
 app.listen(port, function(err){
     if(err){
-        console.log('error in running port:', port);
+        console.log(`error in running port: ${port}`);
     }
-    console.log('server running on port:', port);
+    console.log(`server running on port:${port}`);
 })
