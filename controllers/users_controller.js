@@ -1,13 +1,19 @@
 const Users=require('../models/user');
 module.exports.profile=function(req,res){
-    return res.end('<h1> User profile !</h1>');
+    return res.render('user_profile');
 }
 module.exports.singIn=function(req, res){
+    if(req.isAuthenticated()){
+      return res.redirect('/user/profile');
+    }
     return res.render('user_signin',{
         title: "codial | sign in"
     })
 }
 module.exports.signUp=function(req, res){
+  if(req.isAuthenticated()){
+    return res.redirect('/user/profile');
+  }
     return res.render('uesr_signup',{
         title:"Codial | sing up"
     })
@@ -34,3 +40,6 @@ module.exports.create= async function (request, response){
         return;
       }
 };
+module.exports.createSession= async function(req, res){
+  return res.redirect('/');
+}
