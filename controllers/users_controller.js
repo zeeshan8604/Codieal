@@ -43,3 +43,9 @@ module.exports.create= async function (request, response){
 module.exports.createSession= async function(req, res){
   return res.redirect('/');
 }
+module.exports.destroySession =  async function (req, res , next) {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+};

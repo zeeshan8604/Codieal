@@ -5,7 +5,8 @@ const app=express();
 const db = require("./config/mongoos");
 const port=8000;
 
-
+const expressLayout = require('express-ejs-layouts');
+app.use(expressLayout);
 //used for session cookies
 const session=require('express-session');
 const passport=require('passport');
@@ -18,7 +19,9 @@ const MongoStore = require('connect-mongo');
 
 app.use(express.urlencoded());
 app.use(cookieParser());
-
+app.use(express.static('./assets')) // for getting static
+app.set('layout extractStyles',true);
+app.set('layout extractScripts',true)
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
@@ -53,4 +56,4 @@ app.listen(port, function(err){
         console.log(`error in running port: ${port}`);
     }
     console.log(`server running on port:${port}`);
-})
+});
