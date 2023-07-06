@@ -12,11 +12,32 @@ const session=require('express-session');
 const passport=require('passport');
 const passportLocal=require('./config/passport-local-strategy');
 const MongoStore = require('connect-mongo');
+const sassMiddleware = require('node-sass-middleware');
+const postcssMiddleware = require('postcss-middleware');
 
 
 //use express router
 
-
+app.use(sassMiddleware({
+  /* Options */
+  src:'./assets/scss'
+, response: false
+, dest: './assets/css'
+, outputStyle: 'extended'
+, debug:true
+, prefix:'/css'
+}));
+// app.use(postcssMiddleware({
+// plugins: [
+//   /* Plugins */
+//   autoprefixer({
+//     /* Options */
+//   })
+// ],
+// src: function(req) {
+//   return path.join('./assets/css', req.url);
+// }
+// }));
 app.use(express.urlencoded());
 app.use(cookieParser());
 app.use(express.static('./assets')) // for getting static
