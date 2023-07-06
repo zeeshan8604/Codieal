@@ -5,7 +5,7 @@ const homeController=require('../controllers/home_controller');
 
 router.get('/',homeController.home);
 router.use('/user', require('./users'));
-router.use('/trxn',require('./trxn'))
+router.use('/posts', require('./posts'))
 console.log('router loded');
 
 module.exports=router;
