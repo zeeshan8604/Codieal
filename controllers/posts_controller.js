@@ -8,7 +8,7 @@ module.exports.addPost= async function(req, res){
         user: req.user._id,
 
        });
-       console.log(req.user._id);
+      //  console.log(req.user._id);
        return res.redirect('back');
 
 
