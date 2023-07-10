@@ -5,7 +5,15 @@ module.exports.home= async function(req,res){
     //    title:"Home"
     // })
   try{
-    let posts=await Post.find({}).populate('user').exec();
+    let posts=await Post.find({})
+    .populate('user')
+    .populate({
+      path:'comments',
+      populate:{
+        path:'user'
+      }
+    })
+    .exec();
       return res.render('home',{
         title:'codiel | home ',
         posts:posts
