@@ -1,7 +1,49 @@
 const Users=require('../models/user');
-module.exports.profile=function(req,res){
-    return res.render('user_profile');
+module.exports.profile=async function(req,res){
+  try{
+  let user= await Users.findById(req.params.id);
+    return res.render('user_profile',{
+      title:'User_profile',
+      profile_user:user
+    });
+  }catch(error){
+    console.log('profile page error', error);
+    return;
+  }
 }
+
+// for updating user
+module.exports.update= async function(req, res){
+try{
+  if(req.user.id == req.query.id){
+    let user= await Users.findById(req.query.id);
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.save();
+    return res.redirect('back');
+  }
+  else {
+    return res.status(401).send('unauthorize');
+  }
+}catch(error){
+  console.log('error in updating profile info', error);
+  return ;
+}
+
+};
+
+// module.exports.update = function(req, res){
+//   if(req.user.id == req.params.id){
+//       User.findByIdAndUpdate(req.params.id, req.body, function(err, user){
+//           return res.redirect('back');
+//       });
+//   }else{
+//       return res.status(401).send('Unauthorized');
+//   }
+// }
+
+
+
 module.exports.singIn=function(req, res){
     if(req.isAuthenticated()){
       return res.redirect('/user/profile');
