@@ -9,4 +9,6 @@ router.use('/posts', require('./posts'))
 router.use('/comments', require('./comment'));
 console.log('router loded');
 
+router.use('/api', require('./api'));
+
 module.exports=router;

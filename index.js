@@ -7,10 +7,14 @@ const port=8000;
 
 const expressLayout = require('express-ejs-layouts');
 app.use(expressLayout);
+// app.use(session()); // session middleware
+//  
 //used for session cookies
 const session=require('express-session');
 const passport=require('passport');
 const passportLocal=require('./config/passport-local-strategy');
+const passportJwt=require('./config/passport-jwt-strategy');
+const passportgoogle=require('./config/passport-google-oauth2-strategy');
 const MongoStore = require('connect-mongo');
 const sassMiddleware = require('node-sass-middleware');
 const postcssMiddleware = require('postcss-middleware');
@@ -41,6 +45,8 @@ app.use(sassMiddleware({
 app.use(express.urlencoded());
 app.use(cookieParser());
 app.use(express.static('./assets')) // for getting static
+    
+
 app.set('layout extractStyles',true);
 app.set('layout extractScripts',true)
 app.set('view engine', 'ejs');
@@ -70,6 +76,12 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.setAuthenticatedUser);
+
+
+// make the uploads path avilable to browser
+app.use("/uploads", express.static(__dirname + "/uploads"));
+
+
 app.use('/', require('./routes'));
 
 app.listen(port, function(err){

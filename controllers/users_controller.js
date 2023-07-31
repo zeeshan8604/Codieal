@@ -1,4 +1,8 @@
+//  const User = require('../models/user');
+
 const Users=require('../models/user');
+const fs=require('fs');
+const path = require('path');
 module.exports.profile=async function(req,res){
   try{
   let user= await Users.findById(req.params.id);
@@ -16,11 +20,35 @@ module.exports.profile=async function(req,res){
 module.exports.update= async function(req, res){
 try{
   if(req.user.id == req.query.id){
+
     let user= await Users.findById(req.query.id);
-    user.name = req.body.name;
-    user.email = req.body.email;
-    user.save();
-    return res.redirect('back');
+
+    Users.uploadedAvtar(req, res, function (error) {
+      if (error) {
+        console.log("error");
+        return;
+      }
+      user.name = req.body.name;
+      user.email = req.body.email;
+
+      //if file is present
+      if (req.file) {
+        //and upload new file (replace old file with new file)
+        if (
+          user.avtar &&
+          fs.existsSync(path.join(__dirname, "..", user.avtar))
+        ) {
+          fs.unlinkSync(path.join(__dirname, "..", user.avtar));
+        }
+        user.avtar = Users.avtarPath + "/" + req.file.filename;
+        
+      }
+      user.save();
+      // request.flash("successs", "Profile Updated Successfully");
+      return res.redirect("back");
+    });
+
+    
   }
   else {
     return res.status(401).send('unauthorize');

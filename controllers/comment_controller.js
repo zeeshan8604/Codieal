@@ -17,6 +17,12 @@ try{
         // comment = await comment.populate("user", "name email").exec();
         post.comments.push(comment);
         post.save();
+        if (req.xhr) {
+          return res.status(200).json({
+            comment: comment,
+            message: "Comment Added Successfully",
+          });
+        }
         res.redirect('/');
     
     }
@@ -34,6 +40,13 @@ module.exports.destroy=async function(req, res){
       let postId=comment.post;
       comment.deleteOne();
       let post= Post.findByIdAndUpdate({$pull:{comments:req.params.id}});
+    
+      if (req.xhr) {
+        return res.status(200).json({
+          comment_id: req.params.id,
+          message: "Comment Delted Successfully",
+        });
+      }
       return res.redirect('back');
     }else{
       return res.redirect('back');
