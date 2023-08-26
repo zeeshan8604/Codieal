@@ -3,12 +3,30 @@
 const Users=require('../models/user');
 const fs=require('fs');
 const path = require('path');
-module.exports.profile=async function(req,res){
+const Friendships=require('../models/friendship');
+module.exports.profile=async function(request,response){
   try{
-  let user= await Users.findById(req.params.id);
-    return res.render('user_profile',{
+    
+    let user = await Users.findOne({ _id: request.params.id });
+
+    let friendship1,friendship2
+
+    friendship1 = await Friendships.findOne({
+      from_user: request.user,
+      to_user: request.params.id,
+    });
+
+    friendship2 = await Friendships.findOne({
+      from_user: request.params.id,
+      to_user: request.user,
+    });
+
+    
+    let populated_user = await Users.findById(request.user).populate('friends');
+    return response.render('user_profile',{
       title:'User_profile',
-      profile_user:user
+      profile_user:user,
+      populated_user
     });
   }catch(error){
     console.log('profile page error', error);

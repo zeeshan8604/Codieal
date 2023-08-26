@@ -1,5 +1,6 @@
 const Posts=require('../models/post');
 const Comment=require('../models/comment');
+const Like=require('../models/likes');
 
 // creating post and  saving it in db
 module.exports.addPost= async function(req, res){
@@ -34,6 +35,8 @@ module.exports.destroy = async function (request, response) {
     // console.log(post);
     if (post.user == request.user.id) {
       //console.log("post", post);
+      await Like.deleteMany({likeable: post, onModel:'Post'});
+      await Like.deleteMany({_id:{$in: post.comments}});
       post.deleteOne();
       let comments = await Comment.deleteMany({ post: request.params.id });
 

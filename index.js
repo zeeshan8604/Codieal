@@ -1,6 +1,8 @@
 const express = require('express');
 const cookieParser=require('cookie-parser');
 const mongoose=require('mongoose');
+const env=require('./config/environment');
+const logger=require('morgan');
 const app=express();
 const db = require("./config/mongoos");
 const port=8000;
@@ -10,6 +12,7 @@ app.use(expressLayout);
 // app.use(session()); // session middleware
 //  
 //used for session cookies
+const nodemailer=require('nodemailer');
 const session=require('express-session');
 const passport=require('passport');
 const passportLocal=require('./config/passport-local-strategy');
@@ -19,18 +22,26 @@ const MongoStore = require('connect-mongo');
 const sassMiddleware = require('node-sass-middleware');
 const postcssMiddleware = require('postcss-middleware');
 
+// setup the chat server to be used with socket.io
+const chatServer = require('http').Server(app);
+const chatSockets = require('./config/chat_sockets').chatSockets(chatServer);
+chatServer.listen(5000);
+console.log('chat server is listening on port 5000');  
+
+const path=require('path');
 
 //use express router
+if(env.name=='development'){
+  app.use(sassMiddleware({
+    /* Options */
+    src:path.join(__dirname, env.asset_path,'/scss')
+  , dest: path.join(__dirname, env.asset_path, '/css')
+  , outputStyle: 'extended'
+  , debug:true
+  , prefix:'/css'
+  }));
+}
 
-app.use(sassMiddleware({
-  /* Options */
-  src:'./assets/scss'
-, response: false
-, dest: './assets/css'
-, outputStyle: 'extended'
-, debug:true
-, prefix:'/css'
-}));
 // app.use(postcssMiddleware({
 // plugins: [
 //   /* Plugins */
@@ -44,7 +55,9 @@ app.use(sassMiddleware({
 // }));
 app.use(express.urlencoded());
 app.use(cookieParser());
-app.use(express.static('./assets')) // for getting static
+app.use(express.static(env.asset_path)) // for getting static
+
+app.use(logger(env.morgan.mode, env.morgan.options))
     
 
 app.set('layout extractStyles',true);
@@ -56,7 +69,7 @@ app.set('views', './views');
 app.use(
     session({
       name: "codeial",
-      secret:'zeeshanahmed',
+      secret:env.session_cookie_key,
       saveUninitialized: false,
       resave: false,
       cookie: {
